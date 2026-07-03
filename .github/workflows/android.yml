@@ -8,21 +8,22 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    # KSP और जावा के पुराने क्रैश से बचने के लिए सबसे स्टेबल एनवायरनमेंट का उपयोग
+    runs-on: ubuntu-22.04
 
     steps:
     - name: Checkout Repository
       uses: actions/checkout@v4
 
-    - name: Set up JDK 21
+    - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
         distribution: 'zulu'
-        java-version: '21'
+        java-version: '17'
 
     - name: Generate Gradle Wrapper
       run: |
-        gradle wrapper --gradle-version 9.3.1
+        gradle wrapper --gradle-version 8.7
         chmod +x gradlew
 
     - name: Setup Gradle
@@ -34,17 +35,14 @@ jobs:
       run: |
         echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" > .env
 
-    # बिना कोड बदले, KSP कंपाइलर को शांत करने के लिए वर्चुअल डिस्प्ले स्क्रीन चालू करके बिल्ड करना
-    - name: Build Debug APK WITH Xvfb
+    # बिना कोई कोड बदले, पूरी तरह स्थिर एनवायरनमेंट में सीधा सेफ बिल्ड
+    - name: Build Debug APK
       run: |
-        sudo apt-get update && sudo apt-get install -y xvfb
-        xvfb-run --auto-servernum --server-args="-screen 0 1024x768x24" ./gradlew clean assembleDebug \
+        ./gradlew clean assembleDebug \
           --no-build-cache \
           --no-configuration-cache \
           --no-daemon \
-          --stacktrace \
-          -Pkotlin.compiler.execution.strategy=in-process \
-          -Pksp.incremental=false
+          --stacktrace
           
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
