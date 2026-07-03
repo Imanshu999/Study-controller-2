@@ -20,17 +20,13 @@ jobs:
         distribution: 'zulu'
         java-version: '17'
 
-    # यह ऑफिशियल प्लगइन आपके प्रोजेक्ट की gradle-wrapper.properties को अपने आप हैंडल कर लेगा
-    - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@v3
-
     - name: Create .env file
       run: |
         echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" > .env
 
-    # सीधे प्रोजेक्ट रूट में मौजूद gradlew को रन करना
-    - name: Build Debug APK
-      run: ./gradlew assembleDebug --stacktrace
+    # बिना gradlew फाइल के सीधे ग्लोबल gradle का उपयोग करके बिल्ड करना
+    - name: Build Debug APK with Global Gradle
+      run: gradle assembleDebug --stacktrace
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
