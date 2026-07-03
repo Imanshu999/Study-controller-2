@@ -20,7 +20,7 @@ jobs:
         distribution: 'zulu'
         java-version: '17'
 
-    # प्लगइन क्रैश से बचने के लिए ग्रेडल का सबसे ज्यादा कम्पेटिबल वर्जन (8.0) जेनरेट करना
+    # आपके प्रोजेक्ट के एंड्रॉइड प्लगइन्स के साथ सबसे ज्यादा मैच करने वाला स्टेबल ग्रेडल वर्ज़न (8.0)
     - name: Generate Gradle Wrapper
       run: |
         gradle wrapper --gradle-version 8.0
@@ -33,10 +33,10 @@ jobs:
       run: |
         echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" > .env
 
-    # बिना डेमन के क्लीन बिल्ड रन करना ताकि प्लगइन एरर सीधे स्क्रीन पर प्रिंट हो सके
+    # --quiet फ्लैग फालतू के लंबे स्टैक ट्रेस को हटाकर केवल असली एरर लाइन दिखाएगा
     - name: Build Debug APK
-      run: ./gradlew assembleDebug --no-daemon --stacktrace
-      
+      run: ./gradlew assembleDebug --quiet
+
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
       with:
