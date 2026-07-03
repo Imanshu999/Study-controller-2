@@ -20,7 +20,6 @@ jobs:
         distribution: 'zulu'
         java-version: '21'
 
-    # वापस सटीक ग्रेडल वर्जन 9.3.1 पर सेट कर रहे हैं ताकि 48 सेकंड वाला क्रैश रुके
     - name: Generate Gradle Wrapper
       run: |
         gradle wrapper --gradle-version 9.3.1
@@ -35,10 +34,18 @@ jobs:
       run: |
         echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" > .env
 
-    # बिना किसी कैशे के, केवल मैनिफेस्ट मर्जर की एरर डिटेल्स देखने के लिए कमांड
+    # KSP और IntelliJ के क्रैश को रोकने के लिए एनवायरनमेंट वेरिएबल्स और कंपाइलर स्ट्रेटेजी सेट की गई है
     - name: Build Debug APK
-      run: ./gradlew clean assembleDebug --no-build-cache --no-configuration-cache --no-daemon --stacktrace
-
+      run: |
+        ./gradlew clean assembleDebug \
+          --no-build-cache \
+          --no-configuration-cache \
+          --no-daemon \
+          --stacktrace \
+          -Djava.awt.headless=true \
+          -Pkotlin.compiler.execution.strategy=in-process \
+          -Pksp.incremental=false
+          
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
       with:
