@@ -6,10 +6,9 @@ on:
   pull_request:
     branches: [ "main" ]
 
-# ग्लोबल लेवल पर पूरे सर्वर के लिए जावा को हेडलेस मोड में सेट कर रहे हैं
 env:
-  _JAVA_OPTIONS: "-Djava.awt.headless=true"
-  GRADLE_OPTS: "-Djava.awt.headless=true -Dorg.gradle.daemon=false"
+  _JAVA_OPTIONS: "-Djava.awt.headless=true -Didea.home.path=/tmp"
+  GRADLE_OPTS: "-Djava.awt.headless=true -Dorg.gradle.daemon=false -Dorg.gradle.parallel=false"
 
 jobs:
   build:
@@ -39,7 +38,7 @@ jobs:
       run: |
         echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" > .env
 
-    # बिना कोड बदले, पूरी तरह से क्लीन और सेफ तरीके से बिल्ड प्रोसेस चलाना
+    # --max-workers=1 के साथ KSP के बैकग्राउंड थ्रेड टकराव को पूरी तरह रोक रहे हैं
     - name: Build Debug APK
       run: |
         ./gradlew clean assembleDebug \
@@ -47,6 +46,7 @@ jobs:
           --no-configuration-cache \
           --no-daemon \
           --stacktrace \
+          --max-workers=1 \
           -Pkotlin.compiler.execution.strategy=in-process \
           -Pksp.incremental=false
           
