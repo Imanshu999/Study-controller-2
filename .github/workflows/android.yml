@@ -21,10 +21,13 @@ jobs:
         java-version: '17'
         cache: 'gradle'
 
+    # अगर रिपोजिटरी में gradlew फाइल मिसिंग है, तो यह कमांड उसे खुद जेनरेट कर देगी
+    - name: Ensure Gradle Wrapper Exists
+      run: gradle wrapper
+
     - name: Grant Execute Permission for Gradle Wrapper
       run: chmod +x gradlew
 
-    # अगर आपके प्रोजेक्ट को बिल्ड होने के लिए .env फाइल की जरूरत है, तो यह स्टेप उसे क्रिएट करेगा
     - name: Create .env file
       run: |
         echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" > .env
