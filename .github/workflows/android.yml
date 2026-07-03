@@ -6,10 +6,6 @@ on:
   pull_request:
     branches: [ "main" ]
 
-env:
-  _JAVA_OPTIONS: "-Djava.awt.headless=true -Didea.home.path=/tmp"
-  GRADLE_OPTS: "-Djava.awt.headless=true -Dorg.gradle.daemon=false -Dorg.gradle.parallel=false"
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -38,15 +34,15 @@ jobs:
       run: |
         echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" > .env
 
-    # --max-workers=1 के साथ KSP के बैकग्राउंड थ्रेड टकराव को पूरी तरह रोक रहे हैं
-    - name: Build Debug APK
+    # बिना कोड बदले, KSP कंपाइलर को शांत करने के लिए वर्चुअल डिस्प्ले स्क्रीन चालू करके बिल्ड करना
+    - name: Build Debug APK WITH Xvfb
       run: |
-        ./gradlew clean assembleDebug \
+        sudo apt-get update && sudo apt-get install -y xvfb
+        xvfb-run --auto-servernum --server-args="-screen 0 1024x768x24" ./gradlew clean assembleDebug \
           --no-build-cache \
           --no-configuration-cache \
           --no-daemon \
           --stacktrace \
-          --max-workers=1 \
           -Pkotlin.compiler.execution.strategy=in-process \
           -Pksp.incremental=false
           
