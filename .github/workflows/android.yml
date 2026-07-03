@@ -14,14 +14,12 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v4
 
-    # जावा वर्जन को 17 से बढ़ाकर 21 किया गया है ताकि 'version 65' एरर ठीक हो सके
     - name: Set up JDK 21
       uses: actions/setup-java@v4
       with:
         distribution: 'zulu'
         java-version: '21'
 
-    # फ्रेश और कम्पेटिबल ग्रेडल रैपर जेनरेट करना
     - name: Generate Gradle Wrapper
       run: |
         gradle wrapper --gradle-version 8.5
@@ -31,8 +29,9 @@ jobs:
       run: |
         echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" > .env
 
+    # अधिक जानकारी निकालने के लिए --info फ्लैग जोड़ा गया है
     - name: Build Debug APK
-      run: ./gradlew assembleDebug --stacktrace
+      run: ./gradlew assembleDebug --stacktrace --info
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
