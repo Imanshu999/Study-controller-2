@@ -25,16 +25,19 @@ jobs:
         gradle wrapper --gradle-version 9.3.1
         chmod +x gradlew
 
+    # यहाँ हमने cache-disabled सेट किया है ताकि गिटहब की पुरानी खराब फाइलें बिल्ड न रोकें
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v3
+      with:
+        cache-disabled: true
 
     - name: Create .env file
       run: |
         echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" > .env
 
-    # --no-build-cache और clean कमांड के साथ कंपाइल करना ताकि पुराना स्टेल डेटा बिल्ड न रोके
+    # बिल्कुल साफ-सुथरा फ्रेश कंपाइलेशन बिना किसी पुराने डेटा के
     - name: Build Debug APK
-      run: ./gradlew clean assembleDebug --no-build-cache --stacktrace
+      run: ./gradlew clean assembleDebug --no-build-cache --no-daemon --stacktrace
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
