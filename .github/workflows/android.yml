@@ -14,16 +14,17 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v4
 
-    - name: Set up JDK 17
+    # AGP 9.1.1 और Gradle 9.3.1 के लिए जावा 21 अनिवार्य है
+    - name: Set up JDK 21
       uses: actions/setup-java@v4
       with:
         distribution: 'zulu'
-        java-version: '17'
+        java-version: '21'
 
-    # आपके प्रोजेक्ट के एंड्रॉइड प्लगइन्स के साथ सबसे ज्यादा मैच करने वाला स्टेबल ग्रेडल वर्ज़न (8.0)
+    # प्लगइन की मांग के अनुसार रनटाइम पर सटीक Gradle 9.3.1 रैपर जेनरेट करना
     - name: Generate Gradle Wrapper
       run: |
-        gradle wrapper --gradle-version 8.0
+        gradle wrapper --gradle-version 9.3.1
         chmod +x gradlew
 
     - name: Setup Gradle
@@ -33,9 +34,9 @@ jobs:
       run: |
         echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" > .env
 
-    # --quiet फ्लैग फालतू के लंबे स्टैक ट्रेस को हटाकर केवल असली एरर लाइन दिखाएगा
+    # बिना किसी रुकावट के क्लीन असेंबल बिल्ड रन करना
     - name: Build Debug APK
-      run: ./gradlew assembleDebug --quiet
+      run: ./gradlew assembleDebug --stacktrace
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
