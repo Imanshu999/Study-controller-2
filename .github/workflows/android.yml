@@ -32,9 +32,10 @@ jobs:
       run: |
         echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" > .env
 
-    # वार्निंग्स और सख्त लिंट चेकिंग को बायपास करके सीधे APK कंपाइल करना
+    # --stacktrace के साथ -Pandroid.experimental.r8.disablebuiltininliner=true फ्लैग जोड़ा है 
+    # ताकि प्लगइन इनलाइनिंग की दिक्कतों को पकड़ा जा सके
     - name: Build Debug APK
-      run: ./gradlew assembleDebug -x lint -x test --continue --stacktrace
+      run: ./gradlew assembleDebug --stacktrace -Pandroid.experimental.r8.disablebuiltininliner=true
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
