@@ -21,19 +21,18 @@ jobs:
         java-version: '17'
         cache: 'gradle'
 
-    # अगर रिपोजिटरी में gradlew फाइल मिसिंग है, तो यह कमांड उसे खुद जेनरेट कर देगी
-    - name: Ensure Gradle Wrapper Exists
-      run: gradle wrapper
-
+    # रूट डायरेक्टरी में मौजूद gradlew फाइल को सीधे एग्जीक्यूटिव परमिशन देना
     - name: Grant Execute Permission for Gradle Wrapper
-      run: chmod +x gradlew
+      run: chmod +x ./gradlew
 
+    # जेमिनी API की के लिए .env फाइल बनाना
     - name: Create .env file
       run: |
         echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" > .env
 
+    # क्लीन बिल्ड रन करना ताकि कोई पुराना कैशे एरर न आए
     - name: Build Debug APK
-      run: ./gradlew assembleDebug --stacktrace
+      run: ./gradlew clean assembleDebug --stacktrace
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
