@@ -19,26 +19,18 @@ jobs:
       with:
         distribution: 'zulu'
         java-version: '17'
-        cache: 'gradle'
 
-    # रनर एनवायरनमेंट में सीधे एक नया और फ्रेश gradle wrapper जेनरेट करना
-    - name: Setup Gradle Wrapper
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y gradle
-        gradle wrapper
-
-    # अब इसे बिना किसी पाथ एरर के परमिशन मिल जाएगी
-    - name: Grant Execute Permission for Gradle Wrapper
-      run: chmod +x gradlew
+    # यह ऑफिशियल प्लगइन आपके प्रोजेक्ट की gradle-wrapper.properties को अपने आप हैंडल कर लेगा
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v3
 
     - name: Create .env file
       run: |
         echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" > .env
 
-    # बिना पुराना कैशे यूज़ किए फ्रेश बिल्ड करना
+    # सीधे प्रोजेक्ट रूट में मौजूद gradlew को रन करना
     - name: Build Debug APK
-      run: ./gradlew clean assembleDebug --stacktrace
+      run: ./gradlew assembleDebug --stacktrace
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
