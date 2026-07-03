@@ -22,7 +22,7 @@ jobs:
 
     - name: Generate Gradle Wrapper
       run: |
-        gradle wrapper --gradle-version 9.3.1
+        gradle wrapper --gradle-version 8.5
         chmod +x gradlew
 
     - name: Setup Gradle
@@ -34,9 +34,9 @@ jobs:
       run: |
         echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" > .env
 
-    # --no-configuration-cache सबसे जरूरी फ्लैग है जो इस क्रैश को रोकेगा
+    # मैनिफेस्ट मर्जर की असली गड़बड़ को पकड़ने के लिए --stacktrace और --info जोड़ा गया है
     - name: Build Debug APK
-      run: ./gradlew clean assembleDebug --no-build-cache --no-configuration-cache --no-daemon --stacktrace
+      run: ./gradlew clean assembleDebug --no-build-cache --no-daemon --stacktrace --info
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
