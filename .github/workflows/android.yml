@@ -20,15 +20,19 @@ jobs:
         distribution: 'zulu'
         java-version: '17'
 
+    # रूट डायरेक्टरी में गायब gradlew फाइल को सही वर्जन (8.2) के साथ री-जेनरेट करना
+    - name: Generate Gradle Wrapper
+      run: |
+        gradle wrapper --gradle-version 8.2
+        chmod +x gradlew
+
     - name: Create .env file
       run: |
         echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" > .env
 
-    # यह प्लगइन बिना किसी लोकल स्क्रिप्ट के सीधे बिल्ड कम्प्लीट कर देगा
-    - name: Build Android App
-      uses: nwtgck/actions-android-build@v1
-      with:
-        variant: debug
+    # फ्रेश रैपर के साथ बिना किसी एरर के एपीके बिल्ड करना
+    - name: Build Debug APK
+      run: ./gradlew assembleDebug --stacktrace
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
