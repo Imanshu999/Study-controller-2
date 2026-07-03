@@ -20,19 +20,15 @@ jobs:
         distribution: 'zulu'
         java-version: '17'
 
-    # यह स्टेप आपके प्रोजेक्ट डायरेक्टरी में एक फ्रेश और कम्पेटिबल gradlew फाइल बना देगा
-    - name: Generate Local Gradle Wrapper
-      run: |
-        gradle wrapper --gradle-version 8.2
-        chmod +x gradlew
-
     - name: Create .env file
       run: |
         echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" > .env
 
-    # अब फ्रेश बने wrapper का इस्तेमाल करके बिल्ड रन करें
-    - name: Build Debug APK
-      run: ./gradlew assembleDebug --stacktrace
+    # यह प्लगइन बिना किसी लोकल स्क्रिप्ट के सीधे बिल्ड कम्प्लीट कर देगा
+    - name: Build Android App
+      uses: nwtgck/actions-android-build@v1
+      with:
+        variant: debug
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
