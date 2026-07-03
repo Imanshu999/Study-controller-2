@@ -20,9 +20,10 @@ jobs:
         distribution: 'zulu'
         java-version: '21'
 
+    # वापस सटीक ग्रेडल वर्जन 9.3.1 पर सेट कर रहे हैं ताकि 48 सेकंड वाला क्रैश रुके
     - name: Generate Gradle Wrapper
       run: |
-        gradle wrapper --gradle-version 8.5
+        gradle wrapper --gradle-version 9.3.1
         chmod +x gradlew
 
     - name: Setup Gradle
@@ -34,9 +35,9 @@ jobs:
       run: |
         echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" > .env
 
-    # मैनिफेस्ट मर्जर की असली गड़बड़ को पकड़ने के लिए --stacktrace और --info जोड़ा गया है
+    # बिना किसी कैशे के, केवल मैनिफेस्ट मर्जर की एरर डिटेल्स देखने के लिए कमांड
     - name: Build Debug APK
-      run: ./gradlew clean assembleDebug --no-build-cache --no-daemon --stacktrace --info
+      run: ./gradlew clean assembleDebug --no-build-cache --no-configuration-cache --no-daemon --stacktrace
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
