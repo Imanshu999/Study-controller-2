@@ -14,15 +14,16 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v4
 
-    - name: Set up JDK 21
+    - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
         distribution: 'zulu'
-        java-version: '21'
+        java-version: '17'
 
+    # प्लगइन क्रैश से बचने के लिए ग्रेडल का सबसे ज्यादा कम्पेटिबल वर्जन (8.0) जेनरेट करना
     - name: Generate Gradle Wrapper
       run: |
-        gradle wrapper --gradle-version 8.5
+        gradle wrapper --gradle-version 8.0
         chmod +x gradlew
 
     - name: Setup Gradle
@@ -32,11 +33,10 @@ jobs:
       run: |
         echo "GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}" > .env
 
-    # --stacktrace के साथ -Pandroid.experimental.r8.disablebuiltininliner=true फ्लैग जोड़ा है 
-    # ताकि प्लगइन इनलाइनिंग की दिक्कतों को पकड़ा जा सके
+    # बिना डेमन के क्लीन बिल्ड रन करना ताकि प्लगइन एरर सीधे स्क्रीन पर प्रिंट हो सके
     - name: Build Debug APK
-      run: ./gradlew assembleDebug --stacktrace -Pandroid.experimental.r8.disablebuiltininliner=true
-
+      run: ./gradlew assembleDebug --no-daemon --stacktrace
+      
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
       with:
